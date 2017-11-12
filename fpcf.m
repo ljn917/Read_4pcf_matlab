@@ -33,10 +33,21 @@ classdef fpcf < handle
     end
     
     methods
+        % output_dir is a char or saved struct
         function obj = fpcf(output_dir)
             %FPCF Construct an instance of this class
             %   Detailed explanation goes here
-            obj.output_dir = char(output_dir);
+            
+            % default constructor
+            if nargin == 0
+                return
+            end
+            
+            if ischar(output_dir) || isstring(output_dir)
+                obj.output_dir = char(output_dir);
+            else
+                error('fpcf: constructor: unknown arg')
+            end
         end
         
         function parse_log(obj, log_fn)
@@ -105,7 +116,6 @@ classdef fpcf < handle
             obj.q1 = obj.read_data_column(q1_fn);
             obj.q2 = obj.read_data_column(q2_fn);
         end
-        
     end % methods
     
     methods(Static)
