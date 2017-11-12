@@ -116,6 +116,23 @@ classdef fpcf < handle
             obj.q1 = obj.read_data_column(q1_fn);
             obj.q2 = obj.read_data_column(q2_fn);
         end
+        
+        function g4ol2csv(obj, fn)
+            validateattributes(fn, {'char', 'string'}, {'nonempty'}, 'fpcf.g4ol2csv', 'fn');
+            
+            if isempty(obj.g4ol)
+                error('obj.g4ol is empty')
+            end
+            
+            g4 = zeros(size(obj.g4ol) + 1);
+            
+            g4(2:end, 2:end) = obj.g4ol; % (r, t)
+            g4(2:end, 1) = obj.g4ol_r;
+            g4(1, 2:end) = obj.g4ol_t;
+            g4(1, 1) = NaN;
+            
+            dlmwrite(fn, g4, 'delimiter', ',', 'precision','%20.10f','newline','pc');
+        end
     end % methods
     
     methods(Static)
