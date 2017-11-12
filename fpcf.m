@@ -36,13 +36,13 @@ classdef fpcf < handle
         function obj = fpcf(output_dir)
             %FPCF Construct an instance of this class
             %   Detailed explanation goes here
-            obj.output_dir = output_dir;
+            obj.output_dir = char(output_dir);
         end
         
         function parse_log(obj, log_fn)
             %parse_log read var from log
             if exist('log_fn', 'var') && ~isempty(log_fn)
-                obj.log_file = log_fn;
+                obj.log_file = char(log_fn);
             end
             
             fn = [obj.output_dir,filesep,obj.log_file];
