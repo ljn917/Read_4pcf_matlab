@@ -100,7 +100,7 @@ classdef fpcf < handle
         function read_s4(obj)
             % generate s4_t
             % C0R-C0R_s4_direct_fine_t=1176.0000.out
-            obj.s4_t = cellfun(@(x)(sscanf(x,[obj.output_prefix,'_s4_direct_fine_t=%f.out'])), obj.s4_fn);
+            obj.s4_t = cellfun(@(x)(sscanf(x(strfind(x,'_t='):end),'_t=%f.out')), obj.s4_fn);
             [obj.s4, obj.s4_q] = obj.read_files(obj.output_dir, obj.s4_fn, '%f %f %f');
         end
         
