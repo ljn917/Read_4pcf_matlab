@@ -86,7 +86,7 @@ classdef fpcf < handle
             obj.g4ol_t = [];
             obj.g4ol_fn = {};
             for i = 1:max(1, floor(obj.output_len/100)):obj.output_len
-                obj.g4ol_t(end+1) = i*obj.output_deltat;
+                obj.g4ol_t(end+1) = (i-1)*obj.output_deltat;
                 obj.g4ol_fn{end+1} = [g4ol_fn_prefix, num2str(i), g4ol_fn_suffix];
             end
             
