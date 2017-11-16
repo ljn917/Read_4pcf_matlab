@@ -78,16 +78,25 @@ classdef fpcf < handle
                 ' S4_DIRECT filenames:', ...
                 ' S4_DIRECT END filenames');
             
-            % generate g4ol filename
-            % trim(adjustl(output_prefix))//'_g4ol' '_iframe=', trim(adjustl(iframe_str)), '.out'
-            % C0R-C0R_g4ol_iframe=1.out
-            g4ol_fn_prefix = [obj.output_prefix, '_g4ol', '_iframe='];
-            g4ol_fn_suffix = '.out';
-            obj.g4ol_t = [];
-            obj.g4ol_fn = {};
-            for i = 1:max(1, floor(obj.output_len/100)):obj.output_len
-                obj.g4ol_t(end+1) = (i-1)*obj.output_deltat;
-                obj.g4ol_fn{end+1} = [g4ol_fn_prefix, num2str(i), g4ol_fn_suffix];
+            obj.g4ol_fn = obj.log_read_filelist(fid, ...
+                ' g4ol_filename:', ...
+                ' END g4ol_filename');
+            
+            % generate g4ol filename for old program
+            if isempty(obj.g4ol_fn)
+                % trim(adjustl(output_prefix))//'_g4ol' '_iframe=', trim(adjustl(iframe_str)), '.out'
+                % C0R-C0R_g4ol_iframe=1.out
+                g4ol_fn_prefix = [obj.output_prefix, '_g4ol', '_iframe='];
+                g4ol_fn_suffix = '.out';
+                obj.g4ol_t = [];
+                obj.g4ol_fn = {};
+                for i = 1:max(1, floor(obj.output_len/100)):obj.output_len
+                    obj.g4ol_t(end+1) = (i-1)*obj.output_deltat;
+                    obj.g4ol_fn{end+1} = [g4ol_fn_prefix, num2str(i), g4ol_fn_suffix];
+                end
+            else
+                obj.g4ol_t = cellfun(@(x)(sscanf(x(strfind(x,'_iframe='):end),'_iframe=%d.out')), obj.g4ol_fn);
+                obj.g4ol_t = obj.output_deltat*(obj.g4ol_t-1);
             end
             
             fclose(fid);
@@ -184,7 +193,7 @@ classdef fpcf < handle
                         return
                     else
                         tmp = textscan(line, '%d %s');
-                        fnlist{tmp{1}} = tmp{2}{1};
+                        fnlist{end+1} = tmp{2}{1};
                     end
                 else
                     if strcmpi(line, startline)
