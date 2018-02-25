@@ -34,7 +34,7 @@ classdef fpcf < handle
     
     methods
         % output_dir is a char or saved struct
-        function obj = fpcf(output_dir)
+        function obj = fpcf(output_dir, log_fn)
             %FPCF Construct an instance of this class
             %   Detailed explanation goes here
             
@@ -48,6 +48,22 @@ classdef fpcf < handle
             else
                 error('fpcf: constructor: unknown arg')
             end
+            
+            if exist('log_fn', 'var') && ~isempty(log_fn)
+                obj.log_file = char(log_fn);
+            end
+            
+            if nargin == 2
+                obj.read_all;
+            end
+        end
+        
+        function read_all(obj)
+            obj.parse_log;
+            obj.read_chi4;
+            obj.read_g4ol;
+            obj.read_s4;
+            obj.read_q;
         end
         
         function parse_log(obj, log_fn)
@@ -61,6 +77,12 @@ classdef fpcf < handle
             
             if fid < 0
                 error(['Failed to open log file: ', fn])
+            end
+            
+            sampling_per_point = fpcf.log_read_var(fid, 'est sampling/point');
+            if sampling_per_point < 2000
+                disp(['WARNING: sampling_per_point is too few, ', ...
+                    'sampling_per_point=', num2str(sampling_per_point)])
             end
             
             obj.output_deltat = fpcf.log_read_var(fid, 'output_deltat');
@@ -77,6 +99,9 @@ classdef fpcf < handle
             obj.s4_fn = obj.log_read_filelist(fid, ...
                 ' S4_DIRECT filenames:', ...
                 ' S4_DIRECT END filenames');
+%             obj.s4_fn = obj.log_read_filelist(fid, ...
+%                 ' S4 filenames:', ...
+%                 ' S4 END filenames');
             
             obj.g4ol_fn = obj.log_read_filelist(fid, ...
                 ' g4ol_filename:', ...
